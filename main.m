@@ -34,8 +34,9 @@ end
 
 
 %% ICA
-separate_on = noiseless; 
-% separate_on = noisy(:,1:3);
+separate_on = noiseless;
+
+% separate_on = noisy(:,randperm(7,3)); %randomly choose 3 channels
 sampleSize=size(separate_on,1);
 for epoch=1:nEpochs
     randOrder = randperm(sampleSize);
@@ -51,14 +52,20 @@ end
 % Output Seperated Sources
 separated=(W*separate_on')';
 
-% plot
+
+%% plot
 channel_N = size(sources, 2);
+
 % Compute correlation with the source and seperated data
-corelation_mat = corr(separated, sources);
-sep_cor = abs(diag(corelation_mat));
+correlation_mat = abs(corr(separated, sources));
+max_corr = max(correlation_mat); %extract max correlations
+
+% fix shifting
+max_indexes = find(correlation_mat == max_corr)- [0;3;6]; 
+separated = separated(:,max_indexes');
 
 % Plot
-figure('units','normalized', 'position', [0.25 ,0.3, 0.4, 0.6]);
+figure
 sgtitle('Corrolation between source and seperated data')
 for i = 1 : channel_N
     subplot(2, channel_N, i);
@@ -66,5 +73,5 @@ for i = 1 : channel_N
     title(['Source ',num2str(i)]);
     subplot(2,channel_N ,i + channel_N);
     plot(separated(:,i));
-    title(['Seperated' ,num2str(i), newline,'Cor - ' num2str(sep_cor(i))]); 
+    title(['Seperated' ,num2str(i), newline,'Cor - ' num2str(max_corr(i))]); 
 end
