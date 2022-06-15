@@ -1,5 +1,13 @@
-function [separated,W] = ICA(data, W, nEpochs, eta, activeFunction)
+function [separated,W] = ICA(data)
 % The function calculate infomax ICA for the data
+
+% Parameters and initialization
+nDimentions=3;
+nEpochs=10;
+activeFunction=@Sigmoid;
+W=rand(nDimentions);   %weights matrix
+eta=0.1;        %learning rate
+
 
 sampleSize=size(data,1);
 for epoch=1:nEpochs
